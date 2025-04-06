@@ -9,4 +9,7 @@ export const SocketContext = createContext({
   locations: [] as Location[],
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   setLocations: (_locations: SetStateAction<Location[]>) => {},
+  locationSelected: '',
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  setLocationSelected: (_locationSelected: SetStateAction<string>) => {},
 });
