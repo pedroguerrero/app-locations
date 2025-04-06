@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { Box } from '@mui/material';
 import { JSX, useEffect, useState } from 'react';
 import Map from './components/Map';
 import Header from './components/Header';
@@ -9,6 +10,7 @@ import { EventType } from './enums/event-type.enum';
 import { Location } from './entities/location.entity';
 
 function App(): JSX.Element {
+  const [locationSelected, setLocationSelected] = useState('');
   const [locations, setLocations] = useState<Location[]>([]);
 
   useEffect(() => {
@@ -68,10 +70,23 @@ function App(): JSX.Element {
 
   return (
     <>
-      <SocketContext.Provider value={{ socket, locations, setLocations }}>
-        <Header />
-        <SideBar />
-        <Map />
+      <SocketContext.Provider
+        value={{
+          socket,
+          locations,
+          setLocations,
+          locationSelected,
+          setLocationSelected,
+        }}
+      >
+        <Box>
+          <Header />
+        </Box>
+
+        <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+          <SideBar />
+          <Map />
+        </Box>
       </SocketContext.Provider>
     </>
   );

@@ -1,34 +1,94 @@
-import { useContext } from 'react';
+import { Box, Typography } from '@mui/material';
+import { useContext, useEffect, useState } from 'react';
+import {
+  Map,
+  Marker,
+  InfoWindow,
+  APIProvider,
+} from '@vis.gl/react-google-maps';
 import { SocketContext } from '../context/socket';
+import { InfoWindowData } from '../entities/info-window-data.entity';
+import { CurrentLocation } from '../entities/current-location.entity';
 
-export default function Map() {
-  const { locations } = useContext(SocketContext);
+export default function Map2() {
+  const [showInfoWindow, setShowInfoWindow] = useState(false);
+  const [infoWindowData, setInfowindowData] = useState<InfoWindowData | null>(
+    null
+  );
+  const { locations, setLocationSelected } = useContext(SocketContext);
+  const [currentLocation, setCurrentLocation] = useState<CurrentLocation>({
+    lat: Number(import.meta.env.VITE_DEFAULT_LATITUDE),
+    lng: Number(import.meta.env.VITE_DEFAULT_LONGITUDE),
+  });
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        ({ coords: { latitude, longitude } }) => {
+          setCurrentLocation({
+            lat: latitude,
+            lng: longitude,
+          });
+        },
+        (error) => {
+          console.error('Error getting user location:', error);
+        }
+      );
+    }
+  }, []);
 
   return (
-    <div>
-      <h1>Mapa</h1>
-      <p>Ubicaciones en el mapa</p>
-      <div id="map" style={{ width: '100%', height: '500px' }}>
-        <ul>
-          {locations.map((location) => (
-            <li
-              key={location.id}
-              style={{
-                border: '1px solid black',
-                margin: '10px 5px',
-                padding: '10px',
-                listStyle: 'none',
+    <Box sx={{ height: '100vh', width: '500px' }}>
+      <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
+        <Map
+          style={{ width: '100vw', height: '100vh' }}
+          defaultCenter={{ lat: currentLocation.lat, lng: currentLocation.lng }}
+          defaultZoom={18}
+          gestureHandling={'greedy'}
+          disableDefaultUI={true}
+        >
+          {showInfoWindow && (
+            <InfoWindow
+              position={{
+                lat: infoWindowData?.lat || 0,
+                lng: infoWindowData?.lng || 0,
+              }}
+              onCloseClick={() => {
+                setShowInfoWindow(false);
+                setLocationSelected('');
+                setInfowindowData(null);
               }}
             >
-              <h2>{location.name}</h2>
-              <p>{location.description}</p>
-              <p>
-                {location.latitude}, {location.longitude}
-              </p>
-            </li>
+              <Typography variant="h6" gutterBottom>
+                {infoWindowData?.name}
+              </Typography>
+
+              <Typography variant="body2" color="text.secondary">
+                {infoWindowData?.description}
+              </Typography>
+            </InfoWindow>
+          )}
+
+          {locations.map(({ id, name, description, latitude, longitude }) => (
+            <Marker
+              key={id}
+              position={{ lat: Number(latitude), lng: Number(longitude) }}
+              onClick={() => {
+                setInfowindowData({
+                  lat: Number(latitude),
+                  lng: Number(longitude),
+                  name,
+                  description,
+                });
+
+                setLocationSelected(id);
+
+                setShowInfoWindow(true);
+              }}
+            />
           ))}
-        </ul>
-      </div>
-    </div>
+        </Map>
+      </APIProvider>
+    </Box>
   );
 }

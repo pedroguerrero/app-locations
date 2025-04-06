@@ -1,33 +1,64 @@
 import { useContext } from 'react';
+import LocationPinIcon from '@mui/icons-material/LocationPin';
+import {
+  Box,
+  List,
+  ListItem,
+  Typography,
+  ListItemIcon,
+  ListItemText,
+} from '@mui/material';
 import { SocketContext } from '../context/socket';
 
 export default function SideBar() {
-  const { locations } = useContext(SocketContext);
+  const { locations, locationSelected } = useContext(SocketContext);
 
   return (
-    <div>
-      <h1>Ubicaciones</h1>
-      <p>Lista de ubicaciones en tiempo real</p>
-
-      <ul>
-        {locations.map((location) => (
-          <li
-            key={location.id}
-            style={{
-              border: '1px solid black',
-              margin: '10px 5px',
-              padding: '10px',
-              listStyle: 'none',
-            }}
-          >
-            <h2>{location.name}</h2>
-            <p>{location.description}</p>
-            <p>
-              {location.latitude}, {location.longitude}
-            </p>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <Box
+      sx={{
+        height: '100vh',
+        width: '300px',
+        padding: '10px',
+        overflowY: 'auto',
+      }}
+    >
+      <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+        {locations.map(({ id, name, description }) => {
+          return (
+            <ListItem alignItems="flex-start" key={id}>
+              <ListItemIcon>
+                <LocationPinIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary={
+                  <Typography
+                    component="span"
+                    variant="h6"
+                    sx={{
+                      color: locationSelected === id ? 'red' : 'text.primary',
+                      display: 'block',
+                    }}
+                  >
+                    {name}
+                  </Typography>
+                }
+                secondary={
+                  <Typography
+                    component="span"
+                    variant="body2"
+                    sx={{
+                      color: locationSelected === id ? 'red' : 'text.primary',
+                      display: 'inline',
+                    }}
+                  >
+                    {description}
+                  </Typography>
+                }
+              />
+            </ListItem>
+          );
+        })}
+      </List>
+    </Box>
   );
 }
