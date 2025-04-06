@@ -7,15 +7,17 @@ import {
   APIProvider,
 } from '@vis.gl/react-google-maps';
 import { SocketContext } from '../context/socket';
-import { InfoWindowData } from '../entities/info-window-data.entity';
 import { CurrentLocation } from '../entities/current-location.entity';
 
 export default function Map2() {
-  const [showInfoWindow, setShowInfoWindow] = useState(false);
-  const [infoWindowData, setInfowindowData] = useState<InfoWindowData | null>(
-    null
-  );
-  const { locations, setLocationSelected } = useContext(SocketContext);
+  const {
+    locations,
+    setLocationSelected,
+    infoWindowData,
+    setInfoWindowData,
+    showInfoWindow,
+    setShowInfoWindow,
+  } = useContext(SocketContext);
   const [currentLocation, setCurrentLocation] = useState<CurrentLocation>({
     lat: Number(import.meta.env.VITE_DEFAULT_LATITUDE),
     lng: Number(import.meta.env.VITE_DEFAULT_LONGITUDE),
@@ -56,7 +58,7 @@ export default function Map2() {
               onCloseClick={() => {
                 setShowInfoWindow(false);
                 setLocationSelected('');
-                setInfowindowData(null);
+                setInfoWindowData(null);
               }}
             >
               <Typography variant="h6" gutterBottom>
@@ -74,7 +76,7 @@ export default function Map2() {
               key={id}
               position={{ lat: Number(latitude), lng: Number(longitude) }}
               onClick={() => {
-                setInfowindowData({
+                setInfoWindowData({
                   lat: Number(latitude),
                   lng: Number(longitude),
                   name,

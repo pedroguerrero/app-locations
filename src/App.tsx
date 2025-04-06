@@ -8,10 +8,15 @@ import SideBar from './components/SideBar';
 import { SocketContext } from './context/socket';
 import { EventType } from './enums/event-type.enum';
 import { Location } from './entities/location.entity';
+import { InfoWindowData } from './entities/info-window-data.entity';
 
 function App(): JSX.Element {
   const [locationSelected, setLocationSelected] = useState('');
   const [locations, setLocations] = useState<Location[]>([]);
+  const [infoWindowData, setInfoWindowData] = useState<InfoWindowData | null>(
+    null
+  );
+  const [showInfoWindow, setShowInfoWindow] = useState(false);
 
   useEffect(() => {
     socket.on(EventType.ADD_LOCATION, (data) =>
@@ -77,6 +82,10 @@ function App(): JSX.Element {
           setLocations,
           locationSelected,
           setLocationSelected,
+          infoWindowData,
+          setInfoWindowData,
+          showInfoWindow,
+          setShowInfoWindow,
         }}
       >
         <Box>

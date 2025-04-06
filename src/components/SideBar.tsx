@@ -11,7 +11,13 @@ import {
 import { SocketContext } from '../context/socket';
 
 export default function SideBar() {
-  const { locations, locationSelected } = useContext(SocketContext);
+  const {
+    locations,
+    locationSelected,
+    setInfoWindowData,
+    setLocationSelected,
+    setShowInfoWindow,
+  } = useContext(SocketContext);
 
   return (
     <Box
@@ -23,9 +29,24 @@ export default function SideBar() {
       }}
     >
       <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
-        {locations.map(({ id, name, description }) => {
+        {locations.map(({ id, name, description, latitude, longitude }) => {
           return (
-            <ListItem alignItems="flex-start" key={id}>
+            <ListItem
+              alignItems="flex-start"
+              key={id}
+              onClick={() => {
+                setInfoWindowData({
+                  lat: Number(latitude),
+                  lng: Number(longitude),
+                  name,
+                  description,
+                });
+
+                setLocationSelected(id);
+
+                setShowInfoWindow(true);
+              }}
+            >
               <ListItemIcon>
                 <LocationPinIcon />
               </ListItemIcon>
